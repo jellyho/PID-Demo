@@ -5,6 +5,10 @@ from PyQt5.QtCore import Qt, QTimer, QPoint
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QVBoxLayout, QWidget
 import numpy as np
 
+########################################
+#             PID Pendulum             #
+#             by jellyho               #
+########################################
 
 class PIDDemo(QMainWindow):
     def __init__(self):
@@ -13,7 +17,7 @@ class PIDDemo(QMainWindow):
         canvas = QtGui.QPixmap(400, 400)
         canvas.fill(Qt.white)
         self.plabel.setPixmap(canvas)
-        self.dt = 50 / 1000
+        self.dt = 20 / 1000
         self.init_PID()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
@@ -25,7 +29,7 @@ class PIDDemo(QMainWindow):
         self.D = 0
         self.state = np.array([-np.pi/2, 0])
         self.Target = np.pi
-        self.max_speed = 5.0
+        self.max_speed = 10.0
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(720, 480)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -181,7 +185,7 @@ class PIDDemo(QMainWindow):
     def pendulum(self, input):
         th, thdot = self.state  # th := theta
 
-        g = 3
+        g = 1
         m = 1
         l = 1
         b = 1
@@ -197,10 +201,6 @@ class PIDDemo(QMainWindow):
 
         self.state = np.array([newth, newthdot])
 
-    def init_PID(self):
-        self.prev_error = 0
-        self.sum_error = 0
-
     def get_error(self, curr, target):
         curr = curr % (np.pi * 2)
         target = target % (np.pi * 2)
@@ -212,8 +212,12 @@ class PIDDemo(QMainWindow):
             target =  target - np.pi * 2        
         return target
 
+    def init_PID(self):
+        self.prev_error = 0
+        self.sum_error = 0
+
     def pid(self, P, I, D, error):
-        derror = error - self.prev_error
+        derror = (error - self.prev_error)
         if I != 0:
             self.sum_error += error * self.dt
         else:
