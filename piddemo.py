@@ -172,6 +172,7 @@ class PIDDemo(QMainWindow):
     def spin_cb(self, value):
         self.Target = value / 360 * np.pi * 2
         self.Targetlabel.setText(f'Target : {value} degrees')
+        self.sum_error = 0
 
     def update(self):
         error = self.get_error(self.state[0], self.Target)
